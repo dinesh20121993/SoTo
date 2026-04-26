@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}{{ section.name }} – SoTo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{{ section.name }}</h1>
+  <div class="actions">
+    <a href="{{ url_for('sections.edit', section_id=section.id) }}" class="btn btn-ghost">Edit</a>
+    <form method="POST" action="{{ url_for('sections.delete', section_id=section.id) }}"
+          onsubmit="return confirm('Delete this section and all its contents?')">
+      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid-2">
+
+  {# ── Goals ──────────────────────────────────────────── #}
+  <div class="card">
+    <div class="card-header">
+      <h2>Goals</h2>
+      <a href="{{ url_for('goals.create', section_id=section.id) }}" class="btn btn-primary btn-sm">+ Add</a>
+    </div>
+    <div class="card-body">
+      {% if section.goals %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Goal</th>
+              <th>Priority</th>
+              <th>Deadline</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for goal in section.goals | sort(attribute='priority', reverse=True) %}
+            <tr class="{{ 'done' if goal.is_completed }}">
+              <td>{{ goal.name }}</td>
+              <td>
+                {% if goal.priority == 3 %}
+                  <span class="badge badge-high">High</span>
+                {% elif goal.priority == 2 %}
+                  <span class="badge badge-medium">Medium</span>
+                {% else %}
+                  <span class="badge badge-low">Low</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">
+                {{ goal.deadline.strftime('%b %d, %Y') if goal.deadline else '—' }}
+              </td>
+              <td>
+                <div class="actions">
+                  <form method="POST" action="{{ url_for('goals.complete', section_id=section.id, goal_id=goal.id) }}">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="{{ 'Undo' if goal.is_completed else 'Done' }}">
+                      {{ '↩' if goal.is_completed else '✓' }}
+                    </button>
+                  </form>
+                  <a href="{{ url_for('goals.edit', section_id=section.id, goal_id=goal.id) }}"
+                     class="btn btn-ghost btn-sm btn-icon" title="Edit">✎</a>
+                  <form method="POST" action="{{ url_for('goals.delete', section_id=section.id, goal_id=goal.id) }}"
+                        onsubmit="return confirm('Delete this goal?')">
+                    <button class="btn btn-danger btn-sm btn-icon" title="Delete">✕</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No goals yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Shopping Items ──────────────────────────────────── #}
+  <div class="card">
+    <div class="card-header">
+      <h2>Shopping</h2>
+      <a href="{{ url_for('shopping.create', section_id=section.id) }}" class="btn btn-primary btn-sm">+ Add</a>
+    </div>
+    <div class="card-body">
+      {% if section.shopping_items %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Priority</th>
+              <th>Qty</th>
+              <th>Est. Cost</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in section.shopping_items | sort(attribute='priority', reverse=True) %}
+            <tr class="{{ 'done' if item.is_purchased }}">
+              <td>{{ item.name }}</td>
+              <td>
+                {% if item.priority == 3 %}
+                  <span class="badge badge-high">High</span>
+                {% elif item.priority == 2 %}
+                  <span class="badge badge-medium">Medium</span>
+                {% else %}
+                  <span class="badge badge-low">Low</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">{{ item.quantity }}</td>
+              <td class="text-muted">
+                {{ '₹%.0f' % item.estimated_cost if item.estimated_cost else '—' }}
+              </td>
+              <td>
+                <div class="actions">
+                  <form method="POST" action="{{ url_for('shopping.purchase', section_id=section.id, item_id=item.id) }}">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="{{ 'Undo' if item.is_purchased else 'Bought' }}">
+                      {{ '↩' if item.is_purchased else '✓' }}
+                    </button>
+                  </form>
+                  <a href="{{ url_for('shopping.edit', section_id=section.id, item_id=item.id) }}"
+                     class="btn btn-ghost btn-sm btn-icon" title="Edit">✎</a>
+                  <form method="POST" action="{{ url_for('shopping.delete', section_id=section.id, item_id=item.id) }}"
+                        onsubmit="return confirm('Delete this item?')">
+                    <button class="btn btn-danger btn-sm btn-icon" title="Delete">✕</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No shopping items yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

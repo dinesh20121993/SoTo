@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – SoTo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <a href="{{ url_for('sections.create') }}" class="btn btn-primary">+ New Section</a>
+</div>
+
+{# ── Top priorities ────────────────────────────────────── #}
+<div class="grid-2">
+
+  {# Top Goals #}
+  <div class="card">
+    <div class="card-header">
+      <h2>Top Goals</h2>
+    </div>
+    <div class="card-body">
+      {% if top_goals %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Goal</th>
+              <th>Section</th>
+              <th>Priority</th>
+              <th>Deadline</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for goal in top_goals %}
+            <tr>
+              <td>
+                <a href="{{ url_for('sections.detail', section_id=goal.section_id) }}">
+                  {{ goal.name }}
+                </a>
+              </td>
+              <td class="text-muted">{{ goal.section.name }}</td>
+              <td>
+                {% if goal.priority == 3 %}
+                  <span class="badge badge-high">High</span>
+                {% elif goal.priority == 2 %}
+                  <span class="badge badge-medium">Medium</span>
+                {% else %}
+                  <span class="badge badge-low">Low</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">
+                {{ goal.deadline.strftime('%b %d, %Y') if goal.deadline else '—' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No pending goals.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Top Shopping Items #}
+  <div class="card">
+    <div class="card-header">
+      <h2>Top Shopping Items</h2>
+    </div>
+    <div class="card-body">
+      {% if top_items %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Section</th>
+              <th>Priority</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in top_items %}
+            <tr>
+              <td>
+                <a href="{{ url_for('sections.detail', section_id=item.section_id) }}">
+                  {{ item.name }}
+                </a>
+              </td>
+              <td class="text-muted">{{ item.section.name }}</td>
+              <td>
+                {% if item.priority == 3 %}
+                  <span class="badge badge-high">High</span>
+                {% elif item.priority == 2 %}
+                  <span class="badge badge-medium">Medium</span>
+                {% else %}
+                  <span class="badge badge-low">Low</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No pending items.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{# ── Sections ──────────────────────────────────────────── #}
+<div class="mt-1">
+  <div class="page-header" style="margin-bottom:.9rem">
+    <h2 style="font-size:1rem;font-weight:600;">Your Sections</h2>
+  </div>
+
+  {% if sections %}
+    <div class="section-grid">
+      {% for section in sections %}
+        <a href="{{ url_for('sections.detail', section_id=section.id) }}" class="section-card">
+          <h3>{{ section.name }}</h3>
+          <div class="section-stats">
+            <span>{{ stats[section.id].completed_goals }}/{{ stats[section.id].total_goals }} goals</span>
+            <span>{{ stats[section.id].purchased_items }}/{{ stats[section.id].total_items }} items</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty">No sections yet. <a href="{{ url_for('sections.create') }}" style="color:var(--primary)">Create one</a>.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

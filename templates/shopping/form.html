@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Item' if item else 'New Item' }} – SoTo{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <div class="form-card">
+    <h1>{{ 'Edit Item' if item else 'New Shopping Item' }}</h1>
+    <p class="text-muted" style="margin-bottom:1.25rem;font-size:.875rem;">
+      Section: <strong>{{ section.name }}</strong>
+    </p>
+    <form method="POST">
+      <div class="form-group">
+        <label for="name">Item Name</label>
+        <input type="text" id="name" name="name"
+               value="{{ item.name if item else '' }}" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority">
+          <option value="3" {{ 'selected' if item and item.priority == 3 }}>High</option>
+          <option value="2" {{ 'selected' if (not item) or (item and item.priority == 2) }}>Medium</option>
+          <option value="1" {{ 'selected' if item and item.priority == 1 }}>Low</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" min="1"
+               value="{{ item.quantity if item else 1 }}">
+      </div>
+      <div class="form-group">
+        <label for="estimated_cost">Estimated Cost <span class="text-muted">(optional)</span></label>
+        <input type="number" id="estimated_cost" name="estimated_cost"
+               min="0" step="0.01"
+               value="{{ item.estimated_cost if item and item.estimated_cost else '' }}">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('sections.detail', section_id=section.id) }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

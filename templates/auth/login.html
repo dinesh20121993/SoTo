@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login – SoTo{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <div class="form-card">
+    <h1>Sign in</h1>
+    <form method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" id="remember_me" name="remember_me" style="width:auto">
+        <label for="remember_me" style="margin:0;font-weight:400">Remember me</label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:100%">Sign in</button>
+      </div>
+    </form>
+    <p class="form-footer">No account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+  </div>
+</div>
+{% endblock %}
